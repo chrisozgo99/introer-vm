@@ -22,9 +22,7 @@ let cluster: Cluster | undefined;
     const scriptPath = path.resolve(`${appRoot.path}`, './src/server/server.ts');
     const tsNodePath = path.resolve(`${appRoot.path}`, './node_modules/.bin/ts-node');
   
-
-  
-    await cluster?.task(async ({ page, data: params }) => {
+    await cluster?.queue(params, async ({ page, data: params }) => {
       console.log("Received params: ", params);
       page.goto('https://www.google.com');
       console.log("Page title: ", await page.title());
