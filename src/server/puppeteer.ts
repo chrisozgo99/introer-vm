@@ -50,7 +50,7 @@ async function linkedInSession(
     const cookies = await admin
         .firestore()
         .collection("cookies")
-        .doc("linkedin")
+        .doc("cookies")
         .get()
         .then((doc) => {
             if (!doc.exists) {
