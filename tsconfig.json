@@ -5,10 +5,12 @@
     "strict": true,
     "esModuleInterop": true,
     "outDir": "dist/src",
-    "rootDir": "src"
+    "rootDir": "src",
+    "resolveJsonModule": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.json"
   ],
   "exclude": [
     "node_modules"

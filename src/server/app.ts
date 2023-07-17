@@ -8,7 +8,7 @@ import * as admin from 'firebase-admin';
 const app = express();
 const port = 3000;
 const exec = require('child_process').exec;
-const serviceAccount = require('../../service-accounts/service-accounts/introer-prod-firebase-adminsdk-n62rn-ea6a7de082.json');
+const serviceAccount = require('../service-accounts/introer-prod-firebase-adminsdk-n62rn-ea6a7de082.json');
 
 
 admin.initializeApp({
