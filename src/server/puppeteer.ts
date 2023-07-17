@@ -127,7 +127,11 @@ async function authenticate(page: Page, alreadyOnLoginPage = false) {
         .firestore()
         .collection("cookies")
         .doc("cookies")
-        .set({ cookies: cookies });
+        .set({ cookies: cookies })
+        .catch((err) => {
+            console.log("Error updating document", err);
+        });
+        
 
     return cookies;
 }
