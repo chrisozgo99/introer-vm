@@ -1,16 +1,18 @@
 import express from 'express';
 import path from 'path';
-const app = express();
-const port = 3000;
-const exec = require('child_process').exec;
 import appRoot from 'app-root-path';
 import { getBrowser, getBrowserCluster, linkedInSession } from './puppeteer';
 import { Browser } from 'puppeteer';
 import { Cluster } from 'puppeteer-cluster';
 import * as admin from 'firebase-admin';
+const app = express();
+const port = 3000;
+const exec = require('child_process').exec;
+const serviceAccount = require('../../service-accounts/service-accounts/introer-prod-firebase-adminsdk-n62rn-ea6a7de082.json');
+
 
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
+  credential: admin.credential.cert(serviceAccount),
 });
 
 app.use(express.json());
@@ -26,7 +28,7 @@ let cluster: Cluster | undefined;
     const params = req.body;
     const scriptPath = path.resolve(`${appRoot.path}`, './src/server/server.ts');
     const tsNodePath = path.resolve(`${appRoot.path}`, './node_modules/.bin/ts-node');
-  
+
     await cluster?.queue(params, async ({ page, data: params }) => {
       console.log("Received params: ", params);
       await linkedInSession();
