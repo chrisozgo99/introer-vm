@@ -7,6 +7,11 @@ import appRoot from 'app-root-path';
 import { getBrowser, getBrowserCluster } from './puppeteer';
 import { Browser } from 'puppeteer';
 import { Cluster } from 'puppeteer-cluster';
+import * as admin from 'firebase-admin';
+
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+});
 
 app.use(express.json());
 
