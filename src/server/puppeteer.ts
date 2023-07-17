@@ -115,6 +115,10 @@ async function authenticate(page: Page, alreadyOnLoginPage = false) {
 
     const cookies = await page.cookies();
 
+    console.log(page.url());
+
+    console.log('updating cookies');
+
     await admin
         .firestore()
         .collection("cookies")

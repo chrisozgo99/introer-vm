@@ -31,7 +31,7 @@ let cluster: Cluster | undefined;
 
     await cluster?.queue(params, async ({ page, data: params }) => {
       console.log("Received params: ", params);
-      await linkedInSession(page);
+      await linkedInSession(page, params.values[0].name);
       console.log("Page title: ", await page.title());
       // const paramsStr = Buffer.from(JSON.stringify(params)).toString('base64');
       // exec(`${tsNodePath} ${scriptPath} ${JSON.stringify(paramsStr)}`, (error:any, stdout:any, stderr:any) => {
