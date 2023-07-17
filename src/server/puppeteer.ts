@@ -77,6 +77,8 @@ async function linkedInSession(
     } else {
         console.log('no cookies found. logging in');
         const cookies = await authenticate(page);
+        console.log('finished logging in');
+        console.log(page.url());
         await page.setCookie(...cookies);
     }
 
