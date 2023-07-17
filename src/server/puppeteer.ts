@@ -86,7 +86,7 @@ async function linkedInSession(
         console.log('getting user from url');
         result = await getUserFromUrl(page, url);
     } else if (name) {
-        console.log('searching for user');
+        console.log('searching for user', name);
         result = await searchUser(page, name);
     }
 
