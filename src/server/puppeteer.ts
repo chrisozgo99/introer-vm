@@ -13,7 +13,7 @@ require('dotenv').config();
  */
 async function getBrowser(browser: Browser | undefined): Promise<Browser> {
     const puppeteerConfig = {
-        headless: true,
+        headless: "new" as "new",
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
       };
 
@@ -38,6 +38,10 @@ async function getBrowserCluster(cluster: any): Promise<Cluster<any, any>> {
         return await Cluster.launch({
             concurrency: Cluster.CONCURRENCY_CONTEXT,
             maxConcurrency: 2,
+            puppeteerOptions: {
+                headless: "new",
+                args: ["--no-sandbox", "--disable-setuid-sandbox"],
+            },
           });
     }
 }
