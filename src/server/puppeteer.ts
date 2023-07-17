@@ -102,6 +102,8 @@ async function authenticate(page: Page, alreadyOnLoginPage = false) {
         await page.goto("https://www.linkedin.com/login");
     }
 
+    console.log(page.url());
+
     if (await page.$$eval('#username', (el) => el.length) === 0) {
         await page.type("#password", process.env.LINKEDIN_PASSWORD!);
     } else {
