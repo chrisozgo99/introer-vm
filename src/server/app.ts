@@ -4,7 +4,7 @@ const app = express();
 const port = 3000;
 const exec = require('child_process').exec;
 import appRoot from 'app-root-path';
-import { getBrowser, getBrowserCluster } from './puppeteer';
+import { getBrowser, getBrowserCluster, linkedInSession } from './puppeteer';
 import { Browser } from 'puppeteer';
 import { Cluster } from 'puppeteer-cluster';
 import * as admin from 'firebase-admin';
@@ -29,6 +29,7 @@ let cluster: Cluster | undefined;
   
     await cluster?.queue(params, async ({ page, data: params }) => {
       console.log("Received params: ", params);
+      await linkedInSession();
       await page.goto('https://www.google.com');
       console.log("Page title: ", await page.title());
       // const paramsStr = Buffer.from(JSON.stringify(params)).toString('base64');

@@ -68,4 +68,4 @@ async function linkedInSession(
     return cookies;
 }
 
-export { getBrowser, getBrowserCluster };
+export { getBrowser, getBrowserCluster, linkedInSession };
