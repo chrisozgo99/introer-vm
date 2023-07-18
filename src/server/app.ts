@@ -29,8 +29,8 @@ let cluster: Cluster | undefined;
     // const scriptPath = path.resolve(`${appRoot.path}`, './src/server/server.ts');
     // const tsNodePath = path.resolve(`${appRoot.path}`, './node_modules/.bin/ts-node');
     const results: any[] = [];
-    const tasks = params.values.map((param: any) => {
-      cluster?.queue(params, async ({ page, data: params }) => {
+    const tasks = params.values.map(async (param: any) => {
+      await cluster?.queue(params, async ({ page, data: params }) => {
         console.log("Received params: ", params);
         console.log("Running linkedInSession for: ", param.name);
         const result = await linkedInSession(page, param.name);
