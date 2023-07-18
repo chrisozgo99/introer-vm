@@ -1,29 +1,8 @@
-import puppeteer from "puppeteer";
-import type { Browser, ElementHandle, Page } from "puppeteer";
+import type { ElementHandle, Page, Protocol } from "puppeteer";
 import { Cluster } from "puppeteer-cluster";
 import { UserInfo } from "../types/user";
 import * as admin from "firebase-admin";
 require('dotenv').config();
-
-/**
- * Initialize the browser instance
- *
- * @param {(Browser | undefined)} browser
- * @return {*} browser
- */
-async function getBrowser(browser: Browser | undefined): Promise<Browser> {
-    const puppeteerConfig = {
-        headless: "new" as "new",
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      };
-
-    if (browser) {
-        return browser;
-    } else {
-        return await puppeteer.launch(puppeteerConfig);
-    }
-}
-
 
 /**
  * Initialize the browser cluster instance
@@ -46,9 +25,17 @@ async function getBrowserCluster(cluster: any): Promise<Cluster<any, any>> {
     }
 }
 
+/**
+ * Initialize the linkedIn session and return the requested user info
+ *
+ * @param {Page} page The puppeteer page instance
+ * @param {string} [nameAndCompany] The name and company of the user to search for
+ * @param {string} [url] The url of the user to get info from
+ * @return {*} {Promise<UserInfo | UserInfo[]>}
+ */
 async function linkedInSession(
     page: Page,
-    name?: string,
+    nameAndCompany?: string,
     url?: string,
 ) {
     const cookies = await admin
@@ -87,15 +74,22 @@ async function linkedInSession(
     if (url) {
         console.log('getting user from url');
         result = await getUserFromUrl(page, url);
-    } else if (name) {
-        console.log('searching for user', name);
-        result = await searchUser(page, name);
+    } else if (nameAndCompany) {
+        console.log('searching for user', nameAndCompany);
+        result = await searchUser(page, nameAndCompany);
     }
 
     return result;
 }
 
-async function authenticate(page: Page, alreadyOnLoginPage = false) {
+/**
+ * Log in to LinkedIn
+ *
+ * @param {Page} page The puppeteer page instance
+ * @param {boolean} [alreadyOnLoginPage=false] Whether or not the page is already on the login page
+ * @return {*} {Promise<puppeteer.Cookie[]>}
+ */
+async function authenticate(page: Page, alreadyOnLoginPage: boolean = false): Promise<Protocol.Network.Cookie[]> {
     if (!page) {
         console.log("No page provided");
     }
@@ -136,8 +130,15 @@ async function authenticate(page: Page, alreadyOnLoginPage = false) {
     return cookies;
 }
 
-async function searchUser(page: Page, name: string) {
-  const url = `https://www.linkedin.com/search/results/people/?keywords=${name}&origin=GLOBAL_SEARCH_HEADER`;
+/**
+ * Search for a user on LinkedIn
+ *
+ * @param {Page} page The puppeteer page instance
+ * @param {string} query The name and company of the user to search for
+ * @return {*} {Promise<UserInfo[]>}
+ */
+async function searchUser(page: Page, query: string): Promise<UserInfo[]> {
+  const url = `https://www.linkedin.com/search/results/people/?keywords=${query}&origin=GLOBAL_SEARCH_HEADER`;
 
   await page.goto(url);
 
@@ -180,7 +181,7 @@ async function searchUser(page: Page, name: string) {
     }, element);
 
     const user: UserInfo = {
-        name,
+        name: name,
         title: title.split("\n")[1].trim(),
         location: location.split("\n")[1].trim(),
         profilePhoto,
@@ -195,7 +196,14 @@ async function searchUser(page: Page, name: string) {
   return content;
 }
 
-async function getUserFromUrl(page: Page, url: string) {
+/**
+ * Get the user info from a LinkedIn profile url
+ *
+ * @param {Page} page The puppeteer page instance
+ * @param {string} url The url of the user to get info from
+ * @return {*} {Promise<UserInfo>}
+ */
+async function getUserFromUrl(page: Page, url: string): Promise<UserInfo> {
     await page.goto(url);
     // await page.waitForNavigation({ waitUntil: "networkidle0" });
   
@@ -286,6 +294,14 @@ async function getUserFromUrl(page: Page, url: string) {
     return user;
 }
 
+/**
+ * Select an element from the page
+ *
+ * @param {Page} page The puppeteer page instance
+ * @param {string} query The query to select the element
+ * @param {number} [timeout] The timeout for the query
+ * @return {*}  {Promise<ElementHandle<Element>[]>}
+ */
 async function selectQuery(
     page: Page,
     query: string,
@@ -300,4 +316,4 @@ async function selectQuery(
     return elements;
   }
 
-export { getBrowser, getBrowserCluster, linkedInSession };
+export { getBrowserCluster, linkedInSession };
