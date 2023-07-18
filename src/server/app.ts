@@ -33,7 +33,7 @@ let cluster: Cluster | undefined;
         await cluster?.queue(params, async ({ page, data: params }) => {
           console.log("Received params: ", params);
           console.log("Running linkedInSession for: ", param.name);
-          const result = await linkedInSession(page, param.name);
+          const result = await linkedInSession(page, `${param.name} ${param.company}`);
           resolve(result);
         });
       });

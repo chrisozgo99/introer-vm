@@ -48,7 +48,7 @@ async function getBrowserCluster(cluster: any): Promise<Cluster<any, any>> {
 
 async function linkedInSession(
     page: Page,
-    name?: string,
+    nameAndCompany?: string,
     url?: string,
 ) {
     const cookies = await admin
@@ -87,9 +87,9 @@ async function linkedInSession(
     if (url) {
         console.log('getting user from url');
         result = await getUserFromUrl(page, url);
-    } else if (name) {
-        console.log('searching for user', name);
-        result = await searchUser(page, name);
+    } else if (nameAndCompany) {
+        console.log('searching for user', nameAndCompany);
+        result = await searchUser(page, nameAndCompany);
     }
 
     return result;
@@ -136,8 +136,8 @@ async function authenticate(page: Page, alreadyOnLoginPage = false) {
     return cookies;
 }
 
-async function searchUser(page: Page, name: string) {
-  const url = `https://www.linkedin.com/search/results/people/?keywords=${name}&origin=GLOBAL_SEARCH_HEADER`;
+async function searchUser(page: Page, query: string) {
+  const url = `https://www.linkedin.com/search/results/people/?keywords=${query}&origin=GLOBAL_SEARCH_HEADER`;
 
   await page.goto(url);
 
@@ -180,7 +180,7 @@ async function searchUser(page: Page, name: string) {
     }, element);
 
     const user: UserInfo = {
-        name,
+        name: name,
         title: title.split("\n")[1].trim(),
         location: location.split("\n")[1].trim(),
         profilePhoto,
