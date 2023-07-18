@@ -19,12 +19,17 @@ let cluster: Cluster | undefined;
   app.post('/run-script', async (req: any, res:any) => {
     console.log("Received POST request to /run-script");
     const params = req.body;
+    const type = params.type;
     const tasks = params.values.map(async (param: any) => {
       return new Promise(async resolve => {
         await cluster?.queue(params, async ({ page, data: params }) => {
           console.log("Received params: ", params);
-          console.log("Running linkedInSession for: ", param.name);
-          const result = await linkedInSession(page, `${param.name} ${param.company}`);
+          console.log("Running linkedInSession for: ", type === "url" ? param : `${param.name} ${param.company}`);
+          const result = await linkedInSession(
+            page,
+            type === "url" ? undefined : `${param.name} ${param.company}`,
+            type === "url" ? param : undefined
+          );
           resolve(result);
         });
       });
