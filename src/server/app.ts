@@ -1,33 +1,24 @@
 import express from 'express';
-import path from 'path';
-import appRoot from 'app-root-path';
-import { getBrowser, getBrowserCluster, linkedInSession } from './puppeteer';
-import { Browser } from 'puppeteer';
+import { getBrowserCluster, linkedInSession } from './puppeteer';
 import { Cluster } from 'puppeteer-cluster';
 import * as admin from 'firebase-admin';
+import serviceAccount from '../service-accounts/introer-prod-firebase-adminsdk-n62rn-ea6a7de082.json';
 const app = express();
 const port = 3000;
-const exec = require('child_process').exec;
-const serviceAccount = require('../service-accounts/introer-prod-firebase-adminsdk-n62rn-ea6a7de082.json');
-
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
 });
 
 app.use(express.json());
 
-// let browser: Browser | undefined;
 let cluster: Cluster | undefined;
 (async () => {
   cluster = await getBrowserCluster(cluster);
 
   app.post('/run-script', async (req: any, res:any) => {
-    // browser = await getBrowser(browser);
-    console.log("Received POST request to endpoint /run-script");
+    console.log("Received POST request to /run-script");
     const params = req.body;
-    // const scriptPath = path.resolve(`${appRoot.path}`, './src/server/server.ts');
-    // const tsNodePath = path.resolve(`${appRoot.path}`, './node_modules/.bin/ts-node');
     const tasks = params.values.map(async (param: any) => {
       return new Promise(async resolve => {
         await cluster?.queue(params, async ({ page, data: params }) => {
@@ -41,7 +32,6 @@ let cluster: Cluster | undefined;
 
     const results = await Promise.all(tasks);
     res.send(results);
-  
   });
   
   app.listen(port, '0.0.0.0', () => {
