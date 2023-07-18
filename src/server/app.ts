@@ -28,17 +28,18 @@ let cluster: Cluster | undefined;
     const params = req.body;
     // const scriptPath = path.resolve(`${appRoot.path}`, './src/server/server.ts');
     // const tsNodePath = path.resolve(`${appRoot.path}`, './node_modules/.bin/ts-node');
-    const results: any[] = [];
     const tasks = params.values.map(async (param: any) => {
-      await cluster?.queue(params, async ({ page, data: params }) => {
-        console.log("Received params: ", params);
-        console.log("Running linkedInSession for: ", param.name);
-        const result = await linkedInSession(page, param.name);
-        results.push(result);
+      return new Promise(async resolve => {
+        await cluster?.queue(params, async ({ page, data: params }) => {
+          console.log("Received params: ", params);
+          console.log("Running linkedInSession for: ", param.name);
+          const result = await linkedInSession(page, param.name);
+          resolve(result);
+        });
       });
     });
 
-    await Promise.all(tasks);
+    const results = await Promise.all(tasks);
     res.send(results);
   
   });
