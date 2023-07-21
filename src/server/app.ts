@@ -1,10 +1,13 @@
+require('dotenv').config();
 import express from 'express';
 import { getBrowserCluster, linkedInSession } from './puppeteer';
 import { Cluster } from 'puppeteer-cluster';
 import * as admin from 'firebase-admin';
-import serviceAccount from '../service-accounts/introer-prod-firebase-adminsdk-n62rn-ea6a7de082.json';
+
+const port = parseInt(process.env.PORT!)
 const app = express();
-const port = 3000;
+const serviceAccountPath = process.env.SERVICE_ACCOUNT_PATH!;
+const serviceAccount = require(serviceAccountPath);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
@@ -15,9 +18,10 @@ app.use(express.json());
 let cluster: Cluster | undefined;
 (async () => {
   cluster = await getBrowserCluster(cluster);
+  console.log('endpoint', process.env.API_ENDPOINT!);
 
-  app.post('/run-script', async (req: any, res:any) => {
-    console.log("Received POST request to /run-script");
+  app.post(process.env.API_ENDPOINT!, async (req: any, res:any) => {
+    console.log(`Received POST request to ${process.env.API_ENDPOINT!}`);
     const params = req.body;
     const type = params.type;
     const tasks = params.values.map(async (param: any) => {
