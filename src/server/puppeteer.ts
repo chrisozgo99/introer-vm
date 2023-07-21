@@ -153,12 +153,17 @@ async function searchUser(page: Page, query: {name: string, company: string}): P
 
     await page.goto(url);
   }
-  let elements;
-  elements = await selectQuery(page, "div.entity-result__item");
 
-  if (elements.length === 0) {
+  let elements: ElementHandle<Element>[];
+
+  // Check if there is an h2 with the text "No results found"
+  const noResults = await page.$('h2.artdeco-empty-state__headline');
+
+  if (noResults) {
     const newUrl = `https://www.linkedin.com/search/results/people/?keywords=${query.name}&origin=GLOBAL_SEARCH_HEADER`;
     await page.goto(newUrl);
+    elements = await page.$$("div.entity-result__item");
+  } else {
     elements = await selectQuery(page, "div.entity-result__item");
   }
 
