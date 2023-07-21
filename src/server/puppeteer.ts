@@ -41,7 +41,6 @@ async function linkedInSession(
     },
     url?: string,
 ): Promise<UserInfo[] | UserInfo | null> {
-    console.log('starting linkedInSession');
     const cookies = await admin
         .firestore()
         .collection("cookies")
@@ -61,8 +60,6 @@ async function linkedInSession(
             return null;
         }
     );
-
-    console.log('got cookies');
 
     if (cookies) {
         console.log('cookies found');
