@@ -19,13 +19,11 @@ app.use(express.json());
 
 let cluster: Cluster | undefined;
 
-cron.schedule('0 */6 * * *', async () => {
+cron.schedule('* * * * *', async () => {
   if (cluster) {
-    console.log('recycling cluster');
     await cluster.close();
-    cluster = undefined;
-    await recycleBrowserCluster(cluster);
   }
+  cluster = await recycleBrowserCluster(cluster);
 });
 
 (async () => {
