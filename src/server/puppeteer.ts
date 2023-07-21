@@ -309,4 +309,4 @@ async function selectQuery(
     return elements;
   }
 
-export { linkedInSession };
+export { linkedInSession, authenticate };

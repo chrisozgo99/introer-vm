@@ -1,10 +1,11 @@
 require('dotenv').config();
 import express from 'express';
-import { linkedInSession } from './puppeteer';
+import { authenticate, linkedInSession } from './puppeteer';
 import { getBrowserCluster, recycleBrowserCluster } from '../scripts/puppeteer-cluster';
 import { Cluster } from 'puppeteer-cluster';
 import * as admin from 'firebase-admin';
 import cron from 'node-cron';
+import { Page } from 'puppeteer';
 
 const port = parseInt(process.env.PORT!)
 const app = express();
@@ -24,6 +25,21 @@ cron.schedule('* * * * *', async () => {
     await cluster.close();
   }
   cluster = await recycleBrowserCluster(cluster);
+  const listeners = cluster.getMaxListeners();
+  const authTasks = Array.from({length: listeners}, () => {
+    return new Promise(async resolve => {
+      await cluster?.queue(async (page: Page) => {
+        const result = await authenticate(page);
+        console.log("Authentication complete for an instance");
+        resolve(result);
+      });
+    })
+  })
+
+  await Promise.all(authTasks);
+
+  console.log("Authentication complete");
+  
 });
 
 (async () => {
