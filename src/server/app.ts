@@ -1,11 +1,13 @@
+require('dotenv').config();
 import express from 'express';
 import { getBrowserCluster, linkedInSession } from './puppeteer';
 import { Cluster } from 'puppeteer-cluster';
 import * as admin from 'firebase-admin';
-import serviceAccount from '../service-accounts/introer-prod-firebase-adminsdk-n62rn-ea6a7de082.json';
-require('dotenv').config();
+
 const port = parseInt(process.env.PORT!)
 const app = express();
+const serviceAccountPath = process.env.SERVICE_ACCOUNT_PATH!;
+const serviceAccount = require(serviceAccountPath);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
