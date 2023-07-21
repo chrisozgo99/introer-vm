@@ -35,7 +35,10 @@ async function getBrowserCluster(cluster: any): Promise<Cluster<any, any>> {
  */
 async function linkedInSession(
     page: Page,
-    nameAndCompany?: string,
+    nameAndCompany?: {
+        name: string;
+        company: string;
+    },
     url?: string,
 ): Promise<UserInfo[] | UserInfo | null> {
     const cookies = await admin
@@ -137,8 +140,9 @@ async function authenticate(page: Page, alreadyOnLoginPage: boolean = false): Pr
  * @param {string} query The name and company of the user to search for
  * @return {*} {Promise<UserInfo[]>}
  */
-async function searchUser(page: Page, query: string): Promise<UserInfo[]> {
-  const url = `https://www.linkedin.com/search/results/people/?keywords=${query}&origin=GLOBAL_SEARCH_HEADER`;
+async function searchUser(page: Page, query: {name: string, company: string}): Promise<UserInfo[]> {
+  const queryString = `${query.name} ${query.company}`;
+  const url = `https://www.linkedin.com/search/results/people/?keywords=${queryString}&origin=GLOBAL_SEARCH_HEADER`;
 
   await page.goto(url);
 
@@ -149,8 +153,14 @@ async function searchUser(page: Page, query: string): Promise<UserInfo[]> {
 
     await page.goto(url);
   }
+  let elements;
+  elements = await selectQuery(page, "div.entity-result__item");
 
-  const elements = await selectQuery(page, "div.entity-result__item");
+  if (elements.length === 0) {
+    const newUrl = `https://www.linkedin.com/search/results/people/?keywords=${query.name}&origin=GLOBAL_SEARCH_HEADER`;
+    await page.goto(newUrl);
+    elements = await selectQuery(page, "div.entity-result__item");
+  }
 
   const contentPromises = elements.map(async (element: ElementHandle<Element>) => {
     const profilePhoto = await page.evaluate((el) => {
@@ -205,34 +215,33 @@ async function searchUser(page: Page, query: string): Promise<UserInfo[]> {
  */
 async function getUserFromUrl(page: Page, url: string): Promise<UserInfo> {
     await page.goto(url);
-    // await page.waitForNavigation({ waitUntil: "networkidle0" });
-  
+
     if (page.url().includes("authwall") || page.url().includes("checkpoint")) {
       console.log("Tried to make us authenticate...authenticating");
       await authenticate(page);
-  
+
       await page.goto(url);
       await page.waitForSelector("main.scaffold-layout__main");
     }
-  
+
     console.log("Beat the authwall");
-  
+
     const elements = await selectQuery(page, "main.scaffold-layout__main");
-  
+
     const profilePicture = await page.evaluate((html) => {
       const imgElement = html.querySelector(
         "img.pv-top-card-profile-picture__image"
       );
       return imgElement?.getAttribute("src") ?? "";
     }, elements[0]);
-  
+
     const name = await page.evaluate((html) => {
       const h1Element = html.querySelector(
         "div.pv-text-details__left-panel > div > h1"
       );
       return h1Element?.textContent ?? "";
     }, elements[0]);
-  
+
     // The user's occupation (if they are employed, it is their job,
     //  otherwise it is their school)
     // const occupation = await page.evaluate((html) => {
@@ -241,7 +250,7 @@ async function getUserFromUrl(page: Page, url: string): Promise<UserInfo> {
     //   );
     //   return occupationElement?.textContent ?? "";
     // }, elements[0]);
-  
+
     const location = await page.evaluate((html) => {
       const locationElement = html.querySelector(
         // eslint-disable-next-line max-len
@@ -249,13 +258,13 @@ async function getUserFromUrl(page: Page, url: string): Promise<UserInfo> {
       );
       return locationElement?.textContent ?? "";
     }, elements[0]);
-  
+
     // The user's bio
     // const description = await page.evaluate((html) => {
     //   const divElement = html.querySelector("div.text-body-medium.break-words")
     //   return divElement?.textContent ?? "";
     // }, elements[0]);
-  
+
     // The one liner that is displayed on the profile
     // const oneLiner = await page.evaluate((html) => {
     //   const spanElement = html.querySelector(
@@ -263,7 +272,7 @@ async function getUserFromUrl(page: Page, url: string): Promise<UserInfo> {
     //   );
     //   return spanElement?.textContent ?? "";
     // }, elements[0]);
-  
+
     const firstSpanText = await page.evaluate((html) => {
       const spanElement = html.querySelector(
         // eslint-disable-next-line max-len
@@ -271,7 +280,7 @@ async function getUserFromUrl(page: Page, url: string): Promise<UserInfo> {
       );
       return spanElement?.textContent ?? "";
     }, elements[0]);
-  
+
     const secondSpanText = await page.evaluate((html) => {
       const spanElement = html.querySelector(
         // eslint-disable-next-line max-len
@@ -279,7 +288,7 @@ async function getUserFromUrl(page: Page, url: string): Promise<UserInfo> {
       );
       return spanElement?.textContent ?? "";
     }, elements[0]);
-  
+
     // Get the user's info
     const user: UserInfo = {
       name,
@@ -288,7 +297,7 @@ async function getUserFromUrl(page: Page, url: string): Promise<UserInfo> {
       profilePhoto: profilePicture,
       linkedInUrl: url,
     };
-  
+
     console.log("Returning user");
   
     return user;

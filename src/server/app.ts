@@ -30,7 +30,7 @@ let cluster: Cluster | undefined;
           console.log("Running linkedInSession for: ", type === "url" ? param : `${param.name} ${param.company}`);
           const result = await linkedInSession(
             page,
-            type === "url" ? undefined : `${param.name} ${param.company}`,
+            type === "url" ? undefined : {name: param.name, company: param.company},
             type === "url" ? param : undefined
           );
           resolve(result);
