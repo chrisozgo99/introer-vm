@@ -37,7 +37,7 @@ async function linkedInSession(
     page: Page,
     nameAndCompany?: string,
     url?: string,
-) {
+): Promise<UserInfo[] | UserInfo | null> {
     const cookies = await admin
         .firestore()
         .collection("cookies")
