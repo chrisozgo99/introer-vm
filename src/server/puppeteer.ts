@@ -10,7 +10,7 @@ require('dotenv').config();
  * @param {*} cluster
  * @return {*}  {Promise<any>}
  */
-async function getBrowserCluster(cluster: any): Promise<Cluster<any, any>> {
+async function getBrowserCluster(cluster: any, headless: boolean | "new" = "new"): Promise<Cluster<any, any>> {
     if (cluster) {
         return cluster;
     } else {
@@ -18,7 +18,7 @@ async function getBrowserCluster(cluster: any): Promise<Cluster<any, any>> {
             concurrency: Cluster.CONCURRENCY_CONTEXT,
             maxConcurrency: 2,
             puppeteerOptions: {
-                headless: "new",
+                headless: headless,
                 args: ["--no-sandbox", "--disable-setuid-sandbox"],
             },
           });
@@ -41,6 +41,7 @@ async function linkedInSession(
     },
     url?: string,
 ): Promise<UserInfo[] | UserInfo | null> {
+    console.log('starting linkedInSession');
     const cookies = await admin
         .firestore()
         .collection("cookies")
@@ -60,6 +61,8 @@ async function linkedInSession(
             return null;
         }
     );
+
+    console.log('got cookies');
 
     if (cookies) {
         console.log('cookies found');

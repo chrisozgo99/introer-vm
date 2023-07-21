@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && node dist/src/tests/scraping.js",
     "build": "tsc",
     "start": "npm run build && pm2 start dist/src/server/app.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server/app.ts",
