@@ -19,10 +19,12 @@
     "express": "^4.18.2",
     "firebase-admin": "^11.10.1",
     "firebase-functions": "^4.4.1",
+    "node-cron": "^3.0.2",
     "puppeteer": "^20.8.1",
     "puppeteer-cluster": "^0.23.0"
   },
   "devDependencies": {
+    "@types/node-cron": "^3.0.8",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "app-root-path": "^3.1.0",
     "eslint": "^8.44.0",

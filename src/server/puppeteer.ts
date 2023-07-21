@@ -1,29 +1,8 @@
 import type { ElementHandle, Page, Protocol } from "puppeteer";
-import { Cluster } from "puppeteer-cluster";
 import { UserInfo } from "../types/user";
 import * as admin from "firebase-admin";
 require('dotenv').config();
 
-/**
- * Initialize the browser cluster instance
- *
- * @param {*} cluster
- * @return {*}  {Promise<any>}
- */
-async function getBrowserCluster(cluster: any, headless: boolean | "new" = "new"): Promise<Cluster<any, any>> {
-    if (cluster) {
-        return cluster;
-    } else {
-        return await Cluster.launch({
-            concurrency: Cluster.CONCURRENCY_CONTEXT,
-            maxConcurrency: 2,
-            puppeteerOptions: {
-                headless: headless,
-                args: ["--no-sandbox", "--disable-setuid-sandbox"],
-            },
-          });
-    }
-}
 
 /**
  * Initialize the linkedIn session and return the requested user info
@@ -330,4 +309,4 @@ async function selectQuery(
     return elements;
   }
 
-export { getBrowserCluster, linkedInSession };
+export { linkedInSession };

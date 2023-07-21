@@ -1,8 +1,10 @@
 require('dotenv').config();
 import express from 'express';
-import { getBrowserCluster, linkedInSession } from './puppeteer';
+import { linkedInSession } from './puppeteer';
+import { getBrowserCluster, recycleBrowserCluster } from '../scripts/puppeteer-cluster';
 import { Cluster } from 'puppeteer-cluster';
 import * as admin from 'firebase-admin';
+import cron from 'node-cron';
 
 const port = parseInt(process.env.PORT!)
 const app = express();
@@ -16,8 +18,18 @@ admin.initializeApp({
 app.use(express.json());
 
 let cluster: Cluster | undefined;
+
+cron.schedule('0 */6 * * *', async () => {
+  if (cluster) {
+    console.log('recycling cluster');
+    await cluster.close();
+    cluster = undefined;
+    await recycleBrowserCluster(cluster);
+  }
+});
+
 (async () => {
-  cluster = await getBrowserCluster(cluster);
+  cluster = await recycleBrowserCluster(cluster);
 
   app.post(process.env.API_ENDPOINT!, async (req: any, res:any) => {
     console.log(`Received POST request to ${process.env.API_ENDPOINT!}`);

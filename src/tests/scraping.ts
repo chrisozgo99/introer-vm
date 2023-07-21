@@ -1,5 +1,6 @@
 import { Cluster } from "puppeteer-cluster";
-import { getBrowserCluster, linkedInSession } from "../server/puppeteer";
+import { linkedInSession } from "../server/puppeteer";
+import { getBrowserCluster } from "../scripts/puppeteer-cluster";
 import * as admin from 'firebase-admin';
 
 const serviceAccountPath = process.env.SERVICE_ACCOUNT_PATH!;
