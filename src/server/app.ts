@@ -16,6 +16,7 @@ app.use(express.json());
 let cluster: Cluster | undefined;
 (async () => {
   cluster = await getBrowserCluster(cluster);
+  console.log('endpoint', process.env.API_ENDPOINT!);
 
   app.post(process.env.API_ENDPOINT!, async (req: any, res:any) => {
     console.log(`Received POST request to ${process.env.API_ENDPOINT!}`);
