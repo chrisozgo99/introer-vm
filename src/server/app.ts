@@ -25,7 +25,9 @@ cron.schedule('* * * * *', async () => {
     await cluster.close();
   }
   cluster = await recycleBrowserCluster(cluster);
+  console.log('cluster recycled')
   await cluster?.queue(async (page: Page) => {
+    console.log("Authenticating for an instance")
     let result: Protocol.Network.Cookie[];
     try {
       result = await authenticate(page);

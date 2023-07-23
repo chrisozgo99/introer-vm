@@ -72,6 +72,7 @@ async function linkedInSession(
  * @return {*} {Promise<puppeteer.Cookie[]>}
  */
 async function authenticate(page: Page, alreadyOnLoginPage: boolean = false): Promise<Protocol.Network.Cookie[]> {
+    console.log('in authenticate');
     if (!page) {
         console.log("No page provided");
     }
