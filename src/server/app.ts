@@ -26,11 +26,18 @@ cron.schedule('* * * * *', async () => {
   }
   cluster = await recycleBrowserCluster(cluster);
   const listeners = cluster.getMaxListeners();
-  const authTasks = Array.from({length: listeners}, () => {
-    console.log('task');
+  console.log(`Starting authentication for ${listeners} instances`);
+  const authTasks = Array.from({length: listeners}, (_, index) => {
+    console.log(index);
     return new Promise(async resolve => {
       await cluster?.queue(async (page: Page) => {
-        const result = await authenticate(page);
+        let result;
+        try {
+          result = await authenticate(page);
+        } catch (err) {
+          console.log("Authentication failed for an instance");
+          resolve(false);
+        }
         console.log("Authentication complete for an instance");
         resolve(result);
       });
