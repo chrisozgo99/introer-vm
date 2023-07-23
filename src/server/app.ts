@@ -5,7 +5,7 @@ import { getBrowserCluster, recycleBrowserCluster } from '../scripts/puppeteer-c
 import { Cluster } from 'puppeteer-cluster';
 import * as admin from 'firebase-admin';
 import cron from 'node-cron';
-import { Page } from 'puppeteer';
+import { Page, Protocol } from 'puppeteer';
 
 const port = parseInt(process.env.PORT!)
 const app = express();
@@ -25,29 +25,15 @@ cron.schedule('* * * * *', async () => {
     await cluster.close();
   }
   cluster = await recycleBrowserCluster(cluster);
-  const listeners = cluster.getMaxListeners();
-  console.log(`Starting authentication for ${listeners} instances`);
-  const authTasks = Array.from({length: listeners}, (_, index) => {
-    console.log(index);
-    return new Promise(async resolve => {
-      await cluster?.queue(async (page: Page) => {
-        let result;
-        try {
-          result = await authenticate(page);
-        } catch (err) {
-          console.log("Authentication failed for an instance");
-          resolve(false);
-        }
-        console.log("Authentication complete for an instance");
-        resolve(result);
-      });
-    })
-  })
-
-  await Promise.all(authTasks);
-
-  console.log("Authentication complete");
-  
+  await cluster?.queue(async (page: Page) => {
+    let result: Protocol.Network.Cookie[];
+    try {
+      result = await authenticate(page);
+    } catch (err) {
+      console.log("Authentication failed for an instance");
+    }
+    console.log("Authentication complete for an instance");
+  });
 });
 
 (async () => {
