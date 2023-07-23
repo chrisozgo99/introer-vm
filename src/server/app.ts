@@ -27,6 +27,7 @@ cron.schedule('* * * * *', async () => {
   cluster = await recycleBrowserCluster(cluster);
   const listeners = cluster.getMaxListeners();
   const authTasks = Array.from({length: listeners}, () => {
+    console.log('task');
     return new Promise(async resolve => {
       await cluster?.queue(async (page: Page) => {
         const result = await authenticate(page);
