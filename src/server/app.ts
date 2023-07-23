@@ -36,6 +36,7 @@ cron.schedule('* * * * *', async () => {
     }
     console.log("Authentication complete for an instance");
   });
+  console.log('got to the end of the cron job');
 });
 
 (async () => {
