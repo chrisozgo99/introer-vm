@@ -1,6 +1,7 @@
 require('dotenv').config();
 import express from 'express';
-import { getBrowserCluster, linkedInSession } from './puppeteer';
+import { linkedInSession } from './puppeteer';
+import { getBrowserCluster } from '../scripts/puppeteer-cluster';
 import { Cluster } from 'puppeteer-cluster';
 import * as admin from 'firebase-admin';
 
