@@ -1,6 +1,7 @@
 require('dotenv').config();
 import express from 'express';
-import { getBrowserCluster, linkedInSession } from './puppeteer';
+import { linkedInSession } from './puppeteer';
+import { getBrowserCluster } from '../scripts/puppeteer-cluster';
 import { Cluster } from 'puppeteer-cluster';
 import * as admin from 'firebase-admin';
 
@@ -30,7 +31,7 @@ let cluster: Cluster | undefined;
           console.log("Running linkedInSession for: ", type === "url" ? param : `${param.name} ${param.company}`);
           const result = await linkedInSession(
             page,
-            type === "url" ? undefined : `${param.name} ${param.company}`,
+            type === "url" ? undefined : {name: param.name, company: param.company},
             type === "url" ? param : undefined
           );
           resolve(result);
