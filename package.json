@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && node dist/src/tests/scraping.js",
     "build": "tsc",
     "start": "npm run build && pm2 start dist/src/server/app.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server/app.ts",
@@ -23,6 +23,7 @@
     "puppeteer-cluster": "^0.23.0"
   },
   "devDependencies": {
+    "@types/node-cron": "^3.0.8",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "app-root-path": "^3.1.0",
     "eslint": "^8.44.0",
