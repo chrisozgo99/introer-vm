@@ -1,5 +1,4 @@
 import type { ElementHandle, Page, Protocol } from "puppeteer";
-import { Cluster } from "puppeteer-cluster";
 import { UserInfo } from "../types/user";
 import * as admin from "firebase-admin";
 require('dotenv').config();
@@ -73,6 +72,7 @@ async function linkedInSession(
  * @return {*} {Promise<puppeteer.Cookie[]>}
  */
 async function authenticate(page: Page, alreadyOnLoginPage: boolean = false): Promise<Protocol.Network.Cookie[]> {
+    console.log('in authenticate');
     if (!page) {
         console.log("No page provided");
     }

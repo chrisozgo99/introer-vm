@@ -23,6 +23,7 @@
     "puppeteer-cluster": "^0.23.0"
   },
   "devDependencies": {
+    "@types/node-cron": "^3.0.8",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "app-root-path": "^3.1.0",
     "eslint": "^8.44.0",
