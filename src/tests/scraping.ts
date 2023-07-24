@@ -16,7 +16,7 @@ function test(data: {
 }) {
     let cluster: Cluster | undefined;
     (async () => {
-        cluster = await getBrowserCluster(cluster, false);
+        cluster = await getBrowserCluster(false);
         const params = data;
         const tasks = params.values.map(async (param: any) => {
             return new Promise(async resolve => {
