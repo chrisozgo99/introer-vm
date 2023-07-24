@@ -21,9 +21,11 @@ app.use(express.json());
 let cluster: Cluster | undefined;
 
 cron.schedule('* * * * *', async () => {
+  console.log('one minute has passed');
   if (cluster) {
     await cluster.close();
   }
+  console.log('cluster recycling');
   cluster = await recycleBrowserCluster(cluster);
   console.log('cluster recycled')
 });
