@@ -48,7 +48,7 @@ async function recycleBrowserCluster(cluster?: Cluster<any, any>) {
     const newCluster = await getBrowserCluster();
 
     // setTimeout(() => recycleBrowserCluster(cluster), RECYCLE_INTERVAL);
-    return cluster;
+    return newCluster;
 }
 
 export { getBrowserCluster, recycleBrowserCluster }
