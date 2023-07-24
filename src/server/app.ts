@@ -26,17 +26,6 @@ cron.schedule('* * * * *', async () => {
   }
   cluster = await recycleBrowserCluster(cluster);
   console.log('cluster recycled')
-  await cluster?.queue(async (page: Page) => {
-    console.log("Authenticating for an instance")
-    let result: Protocol.Network.Cookie[];
-    try {
-      result = await authenticate(page);
-    } catch (err) {
-      console.log("Authentication failed for an instance");
-    }
-    console.log("Authentication complete for an instance");
-  });
-  console.log('got to the end of the cron job');
 });
 
 (async () => {
